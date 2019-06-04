@@ -11,9 +11,12 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 // Adding Routes steps in the git hub
-
 app.get("/urls.json", (req, res) => {
     res.json(urlDatabase);
+  });
+  // Sending HTML step
+  app.get("/hello", (req, res) => {
+    res.send("<html><body>Hello <b>World</b></body></html>\n");
   });
 
 app.listen(PORT, () => {
