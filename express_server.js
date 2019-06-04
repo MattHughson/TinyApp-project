@@ -25,6 +25,14 @@ app.get("/", (req, res) => {
 app.get("/urls.json", (req, res) => {
     res.json(urlDatabase);
   });
+
+  app.get("/urls/:shortURL", (req, res) => {
+    let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+    console.log("LG:", templateVars.longURL)
+    console.log("short", templateVars.shortURL)
+    res.render("urls_show", templateVars);
+  });
+
   // Sending HTML step
   app.get("/hello", (req, res) => {
     res.send("<html><body>Hello <b>World</b></body></html>\n");
