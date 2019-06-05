@@ -11,8 +11,22 @@ var urlDatabase = {
 };
 
 function generateRandomString() {
+    var shortLength = 6;
+    var randomNumb = Math.floor(Math.random() * 10);
+    var result = "";
+    var letterArray = [ 'a', 'g', 'y', 't', 'x', 'j', 'e', 'h', 'u', 'p' ]
+    for(var i = 0; i < shortLength; i++){
+        if(randomNumb / 2 === 0){
+         randomNumb =  Math.floor(Math.random() * 10)
+            result += randomNumb
+        } else { 
+             result += letterArray[Math.floor(Math.random() * 10)]
+             randomNumb = Math.floor(Math.random() * 10);
+         }
+ 
+    }return result
+ }
 
-}
 
 
 const bodyParser = require("body-parser");
