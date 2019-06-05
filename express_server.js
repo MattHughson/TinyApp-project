@@ -16,7 +16,7 @@ function generateRandomString() {
     var result = "";
     var letterArray = [ 'a', 'g', 'y', 't', 'x', 'j', 'e', 'h', 'u', 'p' ]
     for(var i = 0; i < shortLength; i++){
-        if(randomNumb / 2 === 0){
+        if(randomNumb % 2 == 0){
          randomNumb =  Math.floor(Math.random() * 10)
             result += randomNumb
         } else { 
@@ -70,7 +70,16 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 app.post("/urls", (req, res) => {
-    console.log(req.body);  // Log the POST request body to the console
-    res.send("Ok");         // Respond with 'Ok' (we will replace this)
+    let short = generateRandomString()
+  
+    urlDatabase[short] = req.body.longURL// why is it printing an array?
+
+    console.log("posttest", urlDatabase[short]);  // Log the POST request body to the console
+    res.redirect(`/urls/${urlDatabase[short]}`);         // it responds with a redirection to /urls/:shortURL, where shortURL is the random string we generated.
+  });
+  app.get(`/u/:shortUrl`, (req, res) => {
+      console.log(urlDatabase[req.params.shortUrl])
+      res.redirect(urlDatabase[req.params.shortUrl])
   });
 
+//http://localhost:8080/u/b2xVn2
