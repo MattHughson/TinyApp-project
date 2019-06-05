@@ -71,6 +71,7 @@ app.listen(PORT, () => {
 });
 app.post("/urls", (req, res) => {
     let short = generateRandomString()
+  console.log(req.body)
   
     urlDatabase[short] = req.body.longURL// why is it printing an array?
 
