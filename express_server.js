@@ -55,9 +55,11 @@ app.get("/urls.json", (req, res) => {
   });
 
   app.get("/urls/:shortURL", (req, res) => {
+      console.log(req.params)
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
     console.log("LG:", templateVars.longURL)
     console.log("short", templateVars.shortURL)
+    console.log(templateVars)
     res.render("urls_show", templateVars);
   });
 
@@ -71,12 +73,11 @@ app.listen(PORT, () => {
 });
 app.post("/urls", (req, res) => {
     let short = generateRandomString()
-  console.log(req.body)
 
     urlDatabase[short] = req.body.longURL// why is it printing an array?
 
-    console.log("posttest", urlDatabase[short]);  // Log the POST request body to the console
-    res.redirect(`/urls/${urlDatabase[short]}`);         // it responds with a redirection to /urls/:shortURL, where shortURL is the random string we generated.
+    console.log("newurl",urlDatabase)// Log the POST request body to the console
+    res.redirect(`/urls/${short}`);         // it responds with a redirection to /urls/:shortURL, where shortURL is the random string we generated.
   });
   app.get(`/u/:shortUrl`, (req, res) => {
       console.log(urlDatabase[req.params.shortUrl])
@@ -86,3 +87,9 @@ app.post("/urls", (req, res) => {
     delete urlDatabase[req.params.shortUrl]
     res.redirect(`/urls`)
   });
+  app.post(`/urls/:shortUrl/update`, (req, res) =>{
+      console.log("testtesttest", req.params)
+      urlDatabase[req.params.shortUrl] = req.body.longURL
+    res.redirect(`/urls/${req.params.shortUrl}`)
+  });
+  // /urls/7j0228/update  

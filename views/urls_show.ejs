@@ -5,10 +5,13 @@
 <body style="font-size:20px; padding:50px;">
   <%- include partials/_header.ejs %>
 <ul>
-
-
-
+<li>
     <%=shortURL %>  <%=longURL%>
+    <form method="POST" action="/urls/<%=shortURL %>/update" name="UpdatedUrl">
+      <input type="text" name="longURL"> <button type="submit">Update</button> </form>
+</li>
+
+
 
 </ul>
 

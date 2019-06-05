@@ -19,8 +19,9 @@
 <ul>
     <% for(urlKey in urls){ %>
         <li><%= urlKey %> - <%= urls[urlKey] %> 
-            <form method="POST" action="/urls/<%= urlKey %>/delete">
+            <form method="POST" action="/urls/<%= urlKey %> /delete">
                <button type="submit">Dangerous</button> 
+               <a href="/urls/<%= urlKey %>">Edit</a>
             </form>
         </li>
     <% }; %>
