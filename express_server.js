@@ -72,7 +72,7 @@ app.listen(PORT, () => {
 app.post("/urls", (req, res) => {
     let short = generateRandomString()
   console.log(req.body)
-  
+
     urlDatabase[short] = req.body.longURL// why is it printing an array?
 
     console.log("posttest", urlDatabase[short]);  // Log the POST request body to the console
@@ -82,5 +82,7 @@ app.post("/urls", (req, res) => {
       console.log(urlDatabase[req.params.shortUrl])
       res.redirect(urlDatabase[req.params.shortUrl])
   });
-
-//http://localhost:8080/u/b2xVn2
+  app.post(`/urls/:shortUrl/delete`, (req, res) =>{
+    delete urlDatabase[req.params.shortUrl]
+    res.redirect(`/urls`)
+  });
