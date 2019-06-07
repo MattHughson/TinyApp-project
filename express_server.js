@@ -8,14 +8,16 @@ app.set("view engine", "ejs"); //Installing and Setting Up EJS
 
 //dataBase for the short URLS
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  // "b2xVn2": "http://www.lighthouselabs.ca",
+  // "9sm5xK": "http://www.google.com"
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 // user database
 // maybe change the key to accesss the id
 const users = { 
     "userRandomID": {
-      id: "userRandomID", 
+      id: "aJ48lW", 
       email: "user@example.com", 
       password: "purple-monkey-dinosaur"
     },
@@ -48,8 +50,13 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get("/urls/new", (req, res) => {
-    let templateVars = {user: users[req.cookies["user_id"]]}
-    res.render("urls_new", templateVars);
+  var chkkCookies = req.cookies.user_id
+    if (Object.entries(chkkCookies).length === 0){
+        return res.redirect("/urls")
+    } else {
+      let templateVars = {user: users[req.cookies["user_id"]]}
+      res.render("urls_new", templateVars);
+    }
   });
 
 app.get("/hello", (req, res) => {
@@ -58,7 +65,37 @@ app.get("/hello", (req, res) => {
   });
 
 app.get("/urls", (req, res) => {
-    let templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]]};
+  //let templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL}
+  //after i add new urls
+  var filterURLS
+  var chkCookies = req.cookies.user_id
+  //*******filter URL Function ************ */
+  function filter (obj){
+    let userid = chkCookies
+    var newObj = []
+    var tempURL
+    var tempShortURL
+    for (var keys in obj){
+      if (obj[keys].userID === userid) {
+        tempURL = obj[keys].longURL
+        tempShortURL = keys
+        newObj.push({[tempShortURL]: tempURL})
+      }
+    }
+    return newObj
+  }
+
+  //***************************************** */
+  if (Object.entries(chkCookies).length === 0){
+// need to create a new login path
+
+    //return res.redirect("/urls")
+
+  } if(chkCookies){
+    filterURLS = filter(urlDatabase)
+  }
+
+   let templateVars = { urls: filterURLS, user: users[req.cookies["user_id"]]};
     res.render("urls_index", templateVars);
   });
 
@@ -71,7 +108,7 @@ app.get("/urls.json", (req, res) => {
   });
 
   app.get("/urls/:shortURL", (req, res) => {
-    let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]] };
+    let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies["user_id"]] };
     res.render("urls_show", templateVars);
   });
 
@@ -80,14 +117,14 @@ app.get("/urls.json", (req, res) => {
     res.send("<html><body>Hello <b>World</b></body></html>\n");
   });
 
-
 app.post("/urls", (req, res) => {
     let short = generateRandomString()
-    urlDatabase[short] = req.body.longURL
+    console.log(urlDatabase)
+    urlDatabase[short] = {longURL: req.body.longURL, userID: req.cookies.user_id};
+    console.log(urlDatabase)
     res.redirect(`/urls/${short}`); 
   });
   app.get(`/u/:shortUrl`, (req, res) => {
-      console.log(urlDatabase[req.params.shortUrl])
       res.redirect(urlDatabase[req.params.shortUrl])
   });
   app.post(`/urls/:shortUrl/delete`, (req, res) =>{
@@ -131,29 +168,30 @@ app.get("/register", (req, res) => {
 });
 //post for account registrations
 app.post(`/register`, (req, res)=>{
+    let authenticateUser1 = (regEmail) => {
+        for (userId in users){
+            let currentUser = users[userId] 
+            if (currentUser.email === regEmail){
+                return true
+            }
+        }
+    }
+    if (authenticateUser1(req.body.email) === true){
+        return res.status(400).send("<html><body> Email Already exist!!! <b>400</b></body></html>\n")
+    }
     let createID = generateRandomString()
     let newUser = { id: createID, email: req.body.email, 
-        password: req.body.password 
-    }
-    let regEmail = req.body.email
-    let authenticateUser = (regEmail) => {
-        for (userId in users){
-            let currentUser = users[userId]  
-            if (currentUser.email === regEmail){
-                return res.send("<html><body>Email already exist in <b>400</b></body></html>\n")
-        }
-}//for loop bracket
-    }
+        password: req.body.password } //obj bracket
+    
+    
     if (req.body.email === "" || req.body.password === ""){
         return res.status(400).send("<html><body>Error status code <b>400</b></body></html>\n")
     } else {
          users[createID] = newUser
          res.cookie("user_id", createID) 
-//res.cookie('cookieName', 'cookieValue')
-
-        res.redirect("/urls")
+          res.redirect("/urls")
     }
-authenticateUser(req.body.email)
+
 });
 app.get("/login", (req, res) => {
     let templateVars = {user: users[req.cookies["user_id"]]}

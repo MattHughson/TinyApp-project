@@ -17,14 +17,16 @@
     <h2>Loop</h2>
 
 <ul>
-    <% for(urlKey in urls){ %>
-        <li><%= urlKey %> - <%= urls[urlKey] %> 
+<% for(url of urls) {%>
+    <% for(urlKey in url){ %>
+        <li><%= urlKey %> - <%= url[urlKey] %> 
             <form method="POST" action="/urls/<%= urlKey %> /delete">
                <button type="submit">Dangerous</button> 
                <a href="/urls/<%= urlKey %>">Edit</a>
             </form>
         </li>
     <% }; %>
+<% }; %>  
 </ul>
 
 <a href="/urls/new"><button type="submit"> Create a url</button> </a>
