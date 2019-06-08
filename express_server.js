@@ -16,7 +16,7 @@ var urlDatabase = {
 // user database
 // maybe change the key to accesss the id
 const users = { 
-    "userRandomID": {
+    "aJ48lW": {
       id: "aJ48lW", 
       email: "user@example.com", 
       password: "purple-monkey-dinosaur"
@@ -51,9 +51,10 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.get("/urls/new", (req, res) => {
   var chkkCookies = req.cookies.user_id
-    if (Object.entries(chkkCookies).length === 0){
-        return res.redirect("/urls")
+     if (Object.entries(chkkCookies).length === 0){
+      return res.redirect("/urls")
     } else {
+      console.log(users[req.cookies["user_id"]])
       let templateVars = {user: users[req.cookies["user_id"]]}
       res.render("urls_new", templateVars);
     }
@@ -84,17 +85,11 @@ app.get("/urls", (req, res) => {
     }
     return newObj
   }
-
-  //***************************************** */
-  if (Object.entries(chkCookies).length === 0){
-// need to create a new login path
-
-    //return res.redirect("/urls")
-
-  } if(chkCookies){
+  //*******filter URL Function ************ */
+   if(chkCookies){
     filterURLS = filter(urlDatabase)
   }
-
+console.log('cookies', users)
    let templateVars = { urls: filterURLS, user: users[req.cookies["user_id"]]};
     res.render("urls_index", templateVars);
   });
@@ -108,8 +103,15 @@ app.get("/urls.json", (req, res) => {
   });
 
   app.get("/urls/:shortURL", (req, res) => {
+    var chkkCookies = req.cookies.user_id;
+      if (chkkCookies === undefined) {
+       return res.redirect("/urls")
+     } else {
+  console.log("lol", urlDatabase[req.params.shortURL].longURL)
+
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies["user_id"]] };
     res.render("urls_show", templateVars);
+    }
   });
 
   // Sending HTML step
@@ -125,16 +127,27 @@ app.post("/urls", (req, res) => {
     res.redirect(`/urls/${short}`); 
   });
   app.get(`/u/:shortUrl`, (req, res) => {
-      res.redirect(urlDatabase[req.params.shortUrl])
+
+      res.redirect(urlDatabase[req.params.shortUrl].longURL)
+    
   });
+  // ************** delete post ***********************
   app.post(`/urls/:shortUrl/delete`, (req, res) =>{
+    var chkkCookies = req.cookies.user_id;
+      if (chkkCookies === undefined) {
+       return res.redirect("/urls")
+      } else {
     delete urlDatabase[req.params.shortUrl]
     res.redirect(`/urls`)
+      }
   });
+
   app.post(`/urls/:shortUrl/update`, (req, res) =>{
-      urlDatabase[req.params.shortUrl] = req.body.longURL
+    urlDatabase[req.params.shortUrl] = req.body.longURL
     res.redirect(`/urls/${req.params.shortUrl}`)
-  });
+  
+});
+
   // login post
   app.post(`/login`, (req, res)=>{
     let loginEmail = req.body.email

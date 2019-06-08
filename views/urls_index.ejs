@@ -12,21 +12,22 @@
     
         <%- include partials/_header.ejs %>
 
+        <h2>URLS</h2>
 
 
-    <h2>Loop</h2>
-
+ <% if (user){ %>
 <ul>
-<% for(url of urls) {%>
-    <% for(urlKey in url){ %>
+    <% for(url of urls) {%>
+        <% for(urlKey in url) { %>
         <li><%= urlKey %> - <%= url[urlKey] %> 
-            <form method="POST" action="/urls/<%= urlKey %> /delete">
+                <form method="POST" action="/urls/<%= urlKey %> /delete">
                <button type="submit">Dangerous</button> 
                <a href="/urls/<%= urlKey %>">Edit</a>
-            </form>
+                </form>
         </li>
-    <% }; %>
-<% }; %>  
+        <% }; %>
+    <% } %> 
+   <% } %>
 </ul>
 
 <a href="/urls/new"><button type="submit"> Create a url</button> </a>
