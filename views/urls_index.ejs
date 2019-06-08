@@ -12,22 +12,25 @@
     
         <%- include partials/_header.ejs %>
 
-        <h2>URLS</h2>
 
 
  <% if (user){ %>
+    <h2>URLS</h2>
 <ul>
     <% for(url of urls) {%>
         <% for(urlKey in url) { %>
         <li><%= urlKey %> - <%= url[urlKey] %> 
-                <form method="POST" action="/urls/<%= urlKey %> /delete">
-               <button type="submit">Dangerous</button> 
+                <form method="POST" action="/urls/<%= urlKey %>/delete">
+               <button type="submit">Delete</button> 
                <a href="/urls/<%= urlKey %>">Edit</a>
                 </form>
         </li>
         <% }; %>
     <% } %> 
-   <% } %>
+<% } %>
+<% if (!user){ %>
+<h2>Please login to create a new short URL.</h2>
+<% } %>
 </ul>
 
 <a href="/urls/new"><button type="submit"> Create a url</button> </a>
