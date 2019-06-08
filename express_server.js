@@ -2,6 +2,7 @@ var express = require("express");
 var cookieParser = require('cookie-parser'); //cookie parser request
 var app = express();
 app.use(cookieParser());
+const bcrypt = require('bcrypt')
 var PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs"); //Installing and Setting Up EJS
@@ -89,7 +90,6 @@ app.get("/urls", (req, res) => {
    if(chkCookies){
     filterURLS = filter(urlDatabase)
   }
-console.log('cookies', users)
    let templateVars = { urls: filterURLS, user: users[req.cookies["user_id"]]};
     res.render("urls_index", templateVars);
   });
@@ -155,17 +155,30 @@ app.post("/urls", (req, res) => {
     let authenticateUser = (loginEmail, loginPassword) => {
         for (userId in users) {
             let currentUser = users[userId]
-            if (currentUser.email === loginEmail && currentUser.password === loginPassword) {
+            let searchBcrypt = bcrypt.compareSync(loginPassword, currentUser.password)
+            console.log("curentuseremail", currentUser.email)
+            console.log("curentuser", currentUser)
+            console.log("CP", currentUser.password)
+            console.log("sB", searchBcrypt)
+            if (currentUser.email === loginEmail && searchBcrypt === true)
+             {
+            //bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword); formula
                 res.cookie('user_id',currentUser.id)
                 res.redirect("/urls")
                 return;
-            } if (currentUser.email !== loginEmail){
-                return res.status(400).send("<html><body>Error status code <b>400</b></body></html>\n")
-            } if (currentUser.password !==loginPassword){
-                return res.status(400).send("<html><body>Error status code <b>400</b></body></html>\n")
             }
-        }
-    }
+          }
+           //(currentUser.email !== loginEmail)check if email is wrong
+            
+                return res.status(400).send("<html><body>Error status code <b>400</b></body></html>\n")
+            // } if (currentUser.password !==loginPassword){
+            //     return res.status(400).send("<html><body>Error status code password <b>400</b></body></html>\n")
+             
+       
+                 
+        }     
+        
+      
     authenticateUser(loginEmail,loginPassword)
 });
 
@@ -189,18 +202,25 @@ app.post(`/register`, (req, res)=>{
             }
         }
     }
+    console.log("regemail", req.body.email )
     if (authenticateUser1(req.body.email) === true){
         return res.status(400).send("<html><body> Email Already exist!!! <b>400</b></body></html>\n")
     }
     let createID = generateRandomString()
+    const passwordReg = req.body.password;
+    console.log("passwordReg", passwordReg)
+    const hashedPassword = bcrypt.hashSync(passwordReg, 10);
+    console.log("hasedp", hashedPassword)
+
     let newUser = { id: createID, email: req.body.email, 
-        password: req.body.password } //obj bracket
-    
+        password: hashedPassword } //obj bracket
     
     if (req.body.email === "" || req.body.password === ""){
         return res.status(400).send("<html><body>Error status code <b>400</b></body></html>\n")
     } else {
          users[createID] = newUser
+         console.log("newObjnewuser", newUser)
+         console.log("users", users[createID])
          res.cookie("user_id", createID) 
           res.redirect("/urls")
     }
